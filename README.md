@@ -2,7 +2,7 @@
 
 Under development.
 
-HTTP server built in Deno language.
+Web framework built in Deno language.
 
 ## API
 
