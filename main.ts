@@ -1,6 +1,6 @@
 import { HttpMethod } from "https://deno.land/std@0.186.0/http/method.ts";
 import { Handler, serveListener } from "https://deno.land/std@0.186.0/http/mod.ts";
-import Logger from "https://deno.land/x/logger/logger.ts";
+import Logger from "https://deno.land/x/logger@v1.1.0/logger.ts";
 
 class AppServer {
     listener: Deno.Listener;
