@@ -3,33 +3,36 @@ import { Handler, serveListener } from "https://deno.land/std@0.186.0/http/mod.t
 import Logger from "https://deno.land/x/logger@v1.1.0/logger.ts";
 
 class AppServer {
-    listener: Deno.Listener;
-    logger: Logger;
-    routes: {
-        path: string;
-        method: HttpMethod;
-        handler: Handler;
-    }[];
+    private listener: Deno.Listener;
+    private logger: Logger;
+    private routeTree: Node<Handler>;
 
     constructor() {
         this.listener = Deno.listen({ port: 8080 });
         this.logger = new Logger();
-        this.routes = [];
+        this.routeTree = new Node<Handler>();
     }
 
     async start() {
-        console.log(`Listening on localhost:8080`);
+        this.logger.info(`Listening on localhost:8080`);
         
         await serveListener(this.listener, (req, connInfo) => {
-            const path = new URL(req.url).pathname;
+            const url = new URL(req.url);
+            const path = url.pathname;
+            const params = url.searchParams;
 
-            this.logger.info("Request received", req.method, path);
+            this.logger.info("Request received", req.method, path, params.toString());
             
-            const route = this.routes.find(route => route.path === path && route.method === req.method);
+            const handler = this.routeTree.find(path + '/' + req.method)
+            if (!handler) {
+                this.logger.error('No handler found.', req.method, path);
+                return new Response('404 Not found.', { status: 404 });
+            }
             
             try {
-                return route?.handler(req, connInfo) ?? new Response('404 Not found.', { status: 404 });
-            } catch (e) {
+                return handler(req, connInfo);
+            }
+             catch (e) {
                 this.logger.error(e);
                 return new Response('500 Internal server error.', { status: 500 });
             }
@@ -37,7 +40,7 @@ class AppServer {
     }
     
     add(path: string, method: HttpMethod, handler: Handler) {
-        this.routes.push({ path, method, handler });
+        this.routeTree.insert(path + '/' + method, handler);
     }
     
     get(path: string, handler: Handler) {
@@ -45,9 +48,62 @@ class AppServer {
     }
 }
 
+interface Node<T> {
+    value: T | null;
+    children: { [key: string]: Node<T> };
+}
+
+class Node<T> implements Node<T> {
+    constructor() {
+        this.value = null;
+        this.children = {};
+    }
+    
+    insert(path: string, value: T) {
+        const pathArray = splitPath(path);
+        
+        // deno-lint-ignore no-this-alias
+        let currentNode: Node<T> = this;
+
+        for (const pathPart of pathArray) {
+            if (!currentNode.children[pathPart]) {
+                currentNode.children[pathPart] = new Node<T>();
+            }
+            currentNode = currentNode.children[pathPart];
+        }
+        
+        currentNode.value = value;
+    }
+    
+    find(path: string): T | null {
+        const pathArray = splitPath(path);
+        
+        // deno-lint-ignore no-this-alias
+        let currentNode: Node<T> = this;
+
+        for (const pathPart of pathArray) {
+            if (!currentNode.children[pathPart]) {
+                currentNode.children[pathPart] = new Node<T>();
+            }
+            currentNode = currentNode.children[pathPart];
+        }
+        
+        return currentNode.value;
+    }
+}
+
+const splitPath = (path: string): string[] => {
+    const pathArray = path.split('/');
+    return pathArray;
+}
+
 const app = new AppServer();
 
 app.get('/', () => new Response('Hello World', { status: 200 }));
 app.get('/ping', () => new Response('pong', { status: 200 }));
+app.get('/echo', (req) => {
+    const params = new URL(req.url).searchParams;
+    return new Response(params.get('say') ?? 'hello', { status: 200 });
+});
 
 await app.start();
