@@ -1,5 +1,12 @@
 {
-  "tasks": {
-    "dev": "deno run --watch main.ts"
-  }
+    "tasks": {
+        "dev": "deno run --watch main.ts"
+    },
+    "fmt": {
+        "useTabs": false,
+        "singleQuote": true,
+        "indentWidth": 4,
+        "semiColons": true,
+        "exclude": ["README.md"]
+    }
 }
