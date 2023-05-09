@@ -1,5 +1,5 @@
 import { HttpMethod } from "https://deno.land/std@0.186.0/http/method.ts";
-import { Handler, serveListener } from "https://deno.land/std@0.186.0/http/mod.ts";
+import { serveListener } from "https://deno.land/std@0.186.0/http/mod.ts";
 import { ConnInfo } from "https://deno.land/std@0.186.0/http/server.ts";
 import Logger from "https://deno.land/x/logger@v1.1.0/logger.ts";
 
