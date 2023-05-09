@@ -7,30 +7,30 @@ type AppRequest = Request & { routeParams?: { [key: string]: string } };
 type AppHandler = (req: AppRequest, connInfo: ConnInfo) => Response | Promise<Response>;
 
 export class AppServer {
-    private listener: Deno.Listener;
-    private logger: Logger;
-    private routeTree: Node<AppHandler>;
+    #listener: Deno.Listener;
+    #logger: Logger;
+    #routeTree: Node<AppHandler>;
 
     constructor() {
-        this.listener = Deno.listen({ port: 8080 });
-        this.logger = new Logger();
-        this.routeTree = new Node<AppHandler>();
+        this.#listener = Deno.listen({ port: 8080 });
+        this.#logger = new Logger();
+        this.#routeTree = new Node<AppHandler>();
     }
 
     async start() {
-        this.logger.info(`Listening on localhost:8080`);
+        this.#logger.info(`Listening on localhost:8080`);
         
-        await serveListener(this.listener, (req, connInfo) => {
+        await serveListener(this.#listener, (req, connInfo) => {
             const url = new URL(req.url);
             const path = url.pathname;
             const searchParams = url.searchParams;
 
-            this.logger.info("Request received", req.method, path, searchParams.toString());
+            this.#logger.info("Request received", req.method, path, searchParams.toString());
             
-            const node = this.routeTree.find(path + '/' + req.method)
+            const node = this.#routeTree.find(path + '/' + req.method)
 
             if (!node || !node.handler) {
-                this.logger.error('No handler found.', req.method, path);
+                this.#logger.error('No handler found.', req.method, path);
                 return new Response('404 Not found.', { status: 404 });
             }
             
@@ -40,14 +40,14 @@ export class AppServer {
                 return handler(Object.assign(req, { routeParams }), connInfo);
             }
              catch (e) {
-                this.logger.error(e);
+                this.#logger.error(e);
                 return new Response('500 Internal server error.', { status: 500 });
             }
         })
     }
     
     add(path: string, method: HttpMethod, handler: AppHandler) {
-        this.routeTree.insert(path + '/' + method, handler);
+        this.#routeTree.insert(path + '/' + method, handler);
     }
     
     get(path: string, handler: AppHandler) {
@@ -65,8 +65,8 @@ const parsePathParameterKey = (keyword: string) => {
 }
 
 interface Node<T> {
-    value: T | null;
-    children: { [key: string]: Node<T> };
+    insert(path: string, value: T): void;
+    find(path: string): { handler: T | null, params: { [key: string]: string } } | null;
 }
 
 type Pattern = {
@@ -76,12 +76,14 @@ type Pattern = {
 }
 
 class Node<T> implements Node<T> {
-    private patterns: Pattern[];
+    #value: T | null;
+    #children: { [key: string]: Node<T> };
+    #patterns: Pattern[];
 
     constructor() {
-        this.value = null;
-        this.children = {};
-        this.patterns = [];
+        this.#value = null;
+        this.#children = {};
+        this.#patterns = [];
     }
     
     insert(path: string, value: T) {
@@ -98,16 +100,16 @@ class Node<T> implements Node<T> {
                     keyword,
                     path: pathPart,
                 };
-                currentNode.patterns.push(pattern);
+                currentNode.#patterns.push(pattern);
             }
 
-            if (!currentNode.children[pathPart]) {
-                currentNode.children[pathPart] = new Node<T>();
+            if (!currentNode.#children[pathPart]) {
+                currentNode.#children[pathPart] = new Node<T>();
             }
-            currentNode = currentNode.children[pathPart];
+            currentNode = currentNode.#children[pathPart];
         }
         
-        currentNode.value = value;
+        currentNode.#value = value;
     }
     
     find(path: string): { handler: T | null, params: { [key: string]: string } } | null {
@@ -118,12 +120,12 @@ class Node<T> implements Node<T> {
         const params: { [key: string]: string } = {};
 
         for (const pathPart of pathArray) {
-            if (currentNode.children[pathPart]) {
-                currentNode = currentNode.children[pathPart];
+            if (currentNode.#children[pathPart]) {
+                currentNode = currentNode.#children[pathPart];
                 continue;
             }
 
-            for (const pattern of currentNode.patterns) {
+            for (const pattern of currentNode.#patterns) {
                 /*
                 TODO: 複数のパスパラメーターパターンがある場合の処理
                 今はパターンの一つ目を返す実装になっている. 
@@ -134,7 +136,7 @@ class Node<T> implements Node<T> {
                     app.get('/:photos/:id, (req) => { res.send('OK') });
                 */
                 if (pattern.type === 'path') {
-                    currentNode = currentNode.children[pattern.path];
+                    currentNode = currentNode.#children[pattern.path];
                     params[pattern.keyword] = pathPart;
                     break;
                 }
@@ -142,7 +144,7 @@ class Node<T> implements Node<T> {
         }
         
         return { 
-            handler: currentNode.value,
+            handler: currentNode.#value,
             params,
         };
     }
