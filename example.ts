@@ -1,4 +1,4 @@
-import { AppServer } from "./main.ts";
+import { AppServer } from "./lib/index.ts";
 
 const app = new AppServer();
 
