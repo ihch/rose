@@ -6,7 +6,7 @@ import Logger from "https://deno.land/x/logger@v1.1.0/logger.ts";
 type AppRequest = Request & { routeParams?: { [key: string]: string } };
 type AppHandler = (req: AppRequest, connInfo: ConnInfo) => Response | Promise<Response>;
 
-class AppServer {
+export class AppServer {
     private listener: Deno.Listener;
     private logger: Logger;
     private routeTree: Node<AppHandler>;
@@ -152,56 +152,3 @@ const splitPath = (path: string): string[] => {
     const pathArray = path.split('/');
     return pathArray;
 }
-
-/*
-
-function main() {
-    const app = new AppServer();
-    
-    app.add('/', app.Method.GET, (req, res) => { res.send('Hello World') });
-
-    app.get('/echo', (req, res) => { res.send('OK') });
-
-    app.get('/photos/:id', (req, res) => { res.send('OK') });
-
-    app.get('/:users/photos/:id', (req, res) => { res.send('OK') });
-    
-    app.get('/health', (req, res) => { res.send('OK') });
-    
-    app.start();
-}
-
-*/
-
-const app = new AppServer();
-
-app.get('/', () => new Response('Hello World', { status: 200 }));
-
-app.get('/ping', () => new Response('pong', { status: 200 }));
-
-app.get('/echo', (req) => {
-    const params = new URL(req.url).searchParams;
-    return new Response(params.get('say') ?? 'hello', { status: 200 });
-});
-
-app.get('/mynameis/:name', (req) => {
-    const routeParams = req.routeParams ?? {};
-    return new Response(routeParams.name ?? 'hello', { status: 200 });
-});
-
-app.get('/mynameis/:name/homete', (req) => {
-    const routeParams = req.routeParams ?? {};
-    return new Response(routeParams.name + ' is great.' ?? 'hello', { status: 200 });
-});
-
-app.get('/mynameis/:name/homete/:word', (req) => {
-    const routeParams = req.routeParams ?? {};
-    return new Response(routeParams.name + ' is ' + routeParams.word + '.' ?? 'hello', { status: 200 });
-});
-
-app.get('/:word', (req) => {
-    const routeParams = req.routeParams ?? {};
-    return new Response(routeParams.word ?? 'hello', { status: 200 });
-});
-
-await app.start();
