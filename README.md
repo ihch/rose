@@ -6,7 +6,7 @@ Web framework built in Deno language.
 
 ## API
 
-A basic response can be returned, but no path parameters are available at this time.
+A basic response can be returned.
 
 ```typescript
 app.get('/', () => new Response('Hello World', { status: 200 }));
