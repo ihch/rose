@@ -40,6 +40,18 @@
     "https://deno.land/x/logger@v1.1.0/stdout.ts": "364b6ca8c016c9e67d457d12aa028a448e4b8af7a78965e42de824fb969a9ccb",
     "https://deno.land/x/logger@v1.1.0/types.ts": "ff4fcb574d926f0189b6cba89194c369ad037a9d219ea76085619d18e7b31cd9",
     "https://deno.land/x/logger@v1.1.0/writable.ts": "bb60ba4a798a10ac1649e30598c0c346055c0dcacb8f1e9452e4f66ea6680a45",
-    "https://deno.land/x/logger@v1.1.0/writer.ts": "539ff3a1bdefef897ca1d13d387ee4d84d6491f460020454e9158076f5e09221"
+    "https://deno.land/x/logger@v1.1.0/writer.ts": "539ff3a1bdefef897ca1d13d387ee4d84d6491f460020454e9158076f5e09221",
+    "https://esm.sh/preact-render-to-string@6.0.3": "8c4eb785a4121b8d1aec05150fae34c286a2e8e6f54d3fefff385d85e4371ea7",
+    "https://esm.sh/preact@10.13.2": "5ebf0838bbc3c32fc6e78a4cd9dd672f2c36386d0595815d721a6b0941278488",
+    "https://esm.sh/preact@10.13.2/hooks": "884334b1560448cf16b4f14841fffdb8707615373a3c76c676a6f9e5c77e43b2",
+    "https://esm.sh/stable/preact@10.13.2/deno/hooks.js": "c7a8e703bcbc6a05949f329b618c33d5d1ea5fee113ddcea44ff0f527af8556f",
+    "https://esm.sh/stable/preact@10.13.2/deno/preact.mjs": "365fab897381f4f403f859c5d12939084560545567108cc90dae901bbe892578",
+    "https://esm.sh/v118/preact@10.13.2/hooks/src/index.d.ts": "5c29febb624fc25d71cb0e125848c9b711e233337a08f7eacfade38fd4c14cc3",
+    "https://esm.sh/v118/preact@10.13.2/src/index.d.ts": "65398710de6aa0a07412da79784e05e6e96763f51c7c91b77344d2d0af06385c",
+    "https://esm.sh/v118/preact@10.13.2/src/jsx.d.ts": "9ac9b82c199fa7b04748807d750eba1a106c0be52041b8617416f88d6fc0a257",
+    "https://esm.sh/v119/preact-render-to-string@6.0.3/deno/preact-render-to-string.mjs": "16bf086ec72d752f54d8ce3f4099ea178789a700c0a9c980b4cc8ef0e6777ce3",
+    "https://esm.sh/v119/preact-render-to-string@6.0.3/deno/src.js": "d1bfce88545aa85634c529bb95b4735ebc43510206183dce3a7adc0aecce122a",
+    "https://esm.sh/v119/preact-render-to-string@6.0.3/src/index.d.ts": "28b13d2c142b9219503f28d91514c9ce09bd9e74928eef1ed76982a3915bd608",
+    "https://esm.sh/v119/preact-render-to-string@6.0.3/src/index.js": "779ec78162d45b83ffb5a46476e9c50e537f05c576bb1d42b640a5bac11b64db"
   }
 }
