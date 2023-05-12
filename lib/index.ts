@@ -10,7 +10,7 @@ type AppHandler = (
     connInfo: ConnInfo,
 ) => Response | Promise<Response>;
 
-export class AppServer {
+export class Rose {
     #listener: Deno.Listener;
     #logger: Logger;
     #routeTree: RadixTree<AppHandler>;

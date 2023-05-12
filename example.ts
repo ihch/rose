@@ -1,6 +1,6 @@
-import { AppServer } from './lib/index.ts';
+import { Rose } from './lib/index.ts';
 
-const app = new AppServer();
+const app = new Rose();
 
 app.get('/', () => new Response('Hello World', { status: 200 }));
 
